@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package com.example.grpc;
+option java_multiple_files = true;
+
+// Just a few example tickers from various markets
+enum Ticker {
+    EUR_USD = 0;
+    BTC_USD = 1;
+    BTC_LTC = 2;
+    AAPL = 3;
+    FB = 4;
+    AMZN = 5;
+}
+
+enum OrderDirection {
+    SELL = 0;
+    BUY = 1;
+}
+
+enum OrderType {
+    LIMIT = 0;
+    MARKET = 1;
+}
+
+enum OrderStatus {
+    PENDING = 0;
+    PARTIALLY_FILLED = 1;
+    FILLED = 2;
+    CANCELLED = 3;
+    PARTIALLY_FILLED_AND_CANCELLED = 4;
+}
+
+message Quote {
+    int64 bid = 1;
+    int64 ask = 2;
+}
+
+message Order {
+    int64 orderId = 1;
+    int64 customerId = 2;
+    Ticker ticker = 3;
+    OrderDirection orderDirection = 4;
+    OrderType orderType = 5;
+    OrderStatus orderStatus = 6;
+    int64 limitPrice = 7;
+    int64 volume = 8;
+    int64 meanMatchedPrice = 9;
+    int64 matchedVolume = 10;
+}
+
+message SubmitOrderRequest {
+    int64 customerId = 1;
+    Ticker ticker = 2;
+    OrderDirection orderDirection = 3;
+    OrderType orderType = 4;
+    int64 limitPrice = 5;
+    int64 volume = 6;
+}
+
+message OrderReference {
+    int64 orderId = 1;
+}
+
+message TickerReference {
+    Ticker ticker = 1;
+}
+
+message SubmitOrderResponse {
+    int64 orderId = 1;
+    int64 meanMatchedPrice = 2;
+    int64 matchedVolume = 3;
+}
+
+message RetrieveOrderResponse {
+    Order order = 1;
+}
+
+message CancelOrderResponse {
+    bool orderWasFound = 1;
+    OrderStatus finalOrderStatus = 2;
+}
+
+service OrderMatcherService {
+    rpc submitOrder (SubmitOrderRequest) returns (SubmitOrderResponse) {}
+    rpc retrieveOrder (OrderReference) returns (RetrieveOrderResponse) {}
+    rpc cancelOrder (OrderReference) returns (CancelOrderResponse) {}
+    rpc getQuote (TickerReference) returns (Quote) {}
+}

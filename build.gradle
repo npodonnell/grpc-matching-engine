@@ -1,0 +1,89 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.10"
+    }
+}
+
+plugins {
+    id "com.google.protobuf" version "0.8.10"
+    id "java"
+    id "application"
+    id "idea"
+}
+
+repositories {
+    mavenCentral()
+}
+
+version "1.0-SNAPSHOT"
+
+sourceCompatibility = 1.8
+
+dependencies {
+    testCompile "junit:junit:4.12"
+    compile "com.google.protobuf:protobuf-java:3.10.0"
+    compile "io.grpc:grpc-all:1.25.0"
+    compile "javax.annotation:javax.annotation-api:1.3.2"
+
+    // JCommander is for parsing command line arguments
+    compile group: 'com.beust', name: 'jcommander', version: '1.78'
+    implementation 'org.jetbrains:annotations:15.0'
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.10.1"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.25.0"
+        }
+    }
+    generateProtoTasks {
+        ofSourceSet('main')*.plugins {
+            grpc { }
+        }
+    }
+}
+
+idea {
+    module {
+        sourceDirs += file("${projectDir}/build/generated/source/proto/main/grpc");
+        sourceDirs += file("${projectDir}/build/generated/source/proto/main/java");
+    }
+}
+
+task runServer(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "com.example.grpc.OrderMatcherServer"
+}
+
+task runClient(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "com.example.grpc.OrderMatcherClient"
+}
+
+startScripts.enabled = false
+
+task orderMatcherServer(type: CreateStartScripts) {
+    mainClassName = "com.example.grpc.OrderMatcherServer"
+    applicationName = "order-matcher-server"
+    outputDir = new File(project.buildDir, 'tmp')
+    classpath = jar.outputs.files + project.configurations.runtime
+}
+
+task orderMatcherClient(type: CreateStartScripts) {
+    mainClassName = "com.example.grpc.OrderMatcherClient"
+    applicationName = "order-matcher-client"
+    outputDir = new File(project.buildDir, 'tmp')
+    classpath = jar.outputs.files + project.configurations.runtime
+}
+
+applicationDistribution.into("bin") {
+    from(orderMatcherServer)
+    from(orderMatcherClient)
+    fileMode = 0755
+}
