@@ -3,9 +3,8 @@ N. P. O'Donnell, 2020
 
 ## Summary
 
-This is a simple gRPC/protobuf based order matching service/engine, similar to those used in financial markets. Buyers 
-and sellers submit orders, and the engine matches buy orders with sell orders, giving both the buyer and seller the best 
-price available.
+Simple gRPC/protobuf based order matching engine, similar to those used in financial markets. Buyers 
+and sellers submit limit orders and the engine matches buy orders with sell orders, giving the "taker" the best price available.
 
 * Buyers and Sellers may:
   * Submit orders
@@ -14,7 +13,8 @@ price available.
   
 * Anybody may:
   * Get a quote of current (latest) price of a market
-  * Get a real-time stream of price quotes for a market (**TBD**)
+  * Get a real-time stream of price bid/ask for a market (TBD)
+  * Get a snapshot of the orderbook followed by a real-time stream of deltas (TBD)
 
 All order matching happens in-memory and orders are stored in two `TreeMap` structures - one for pending buys and one
 pending sells. Each `TreeMap` stores the orders sorted by price - pending buys (bids) in in descending order and
@@ -26,7 +26,7 @@ the "Order Book".
 When a new *limit* sell order comes in, its price is checked to see if it can be matched immediately.
 If there exists a set of pending buy orders such that their prices are all greater or equal to to the sell
 order's price, then the sell can be filled. If the summed value of these buy orders is greater or equal to the value
-of the sell, then the sell can be fully filled, otherwise its a partial fill, and the highest buys are used and the
+of the sell, then the sell can be fully filled, otherwise it's a partial fill, and the highest buys are used and the
 order remains, where it waits to be fully filled. If the sell can not be matched immediately then it's placed in the 
 order book and waits until when (and if) the price moves in its direction.
 
