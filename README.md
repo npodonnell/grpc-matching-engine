@@ -74,5 +74,5 @@ Cancel an order:
 
 Get a price quote:
 ```
-./gradlew runClient --args='-sc GET_QUOTTE -t BTC_USD'
+./gradlew runClient --args='-sc GET_QUOTE -t BTC_USD'
 ```
