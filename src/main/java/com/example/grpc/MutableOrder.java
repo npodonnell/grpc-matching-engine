@@ -17,6 +17,11 @@ public class MutableOrder {
     public long cost;
     public boolean isCancelled;
 
+    /***
+     * Constructor.
+     * @param orderId Order ID.
+     * @param submitOrderRequest Protobuf generated SubmitOrderRequest.
+     */
     public MutableOrder(long orderId, SubmitOrderRequest submitOrderRequest) {
         this.orderId = orderId;
         this.customerId = submitOrderRequest.getCustomerId();
@@ -30,6 +35,10 @@ public class MutableOrder {
         this.isCancelled = false;
     }
 
+    /***
+     * Deduces the OrderStatus from the order's filled/remaining volume and cancellation status.
+     * @return Deduced order status.
+     */
     public OrderStatus orderStatus() {
         if (isCancelled) {
             if (filledVolume == 0) {
@@ -48,10 +57,18 @@ public class MutableOrder {
         }
     }
 
+    /***
+     * Computes the mean matched price of the order, zero if no volume is fixed.
+     * @return Mean matched price.
+     */
     public long meanMatchedPrice() {
         return (filledVolume > 0) ? (cost / filledVolume) : 0;
     }
 
+    /***
+     * To tring.
+     * @return String representation.
+     */
     @Override
     public String toString() {
         return orderId + "|" +
@@ -61,6 +78,10 @@ public class MutableOrder {
                 limitPrice;
     }
 
+    /***
+     * Hash Code.
+     * @return Hash code.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(orderId);
