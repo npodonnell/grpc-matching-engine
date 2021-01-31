@@ -25,7 +25,7 @@ class OrderMatcherServiceImpl extends OrderMatcherServiceGrpc.OrderMatcherServic
     }
 
     /**
-     * Retrieve an order from the matching engine. Order can be activa or historical. If not found, the `Order` field
+     * Retrieve an order from the matching engine. Order can be active or historical. If not found, the `Order` field
      * of the `RetrieveOrderResponse` will be empty.
      *
      * @param orderReference - OrderReference object which contains information used to locate the order (typically id)
