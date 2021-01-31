@@ -64,6 +64,11 @@ class OrderMatcherServiceImpl extends OrderMatcherServiceGrpc.OrderMatcherServic
     // Utility Functions
     ///
 
+    /***
+     * Convert an order to a submit order response.
+     * @param order Order.
+     * @return Resultant SubmitOrderResponse.
+     */
     private static SubmitOrderResponse orderToSubmitOrderResponse(Order order) {
         return SubmitOrderResponse.newBuilder()
                 .setOrderId(order.getOrderId())
@@ -72,6 +77,11 @@ class OrderMatcherServiceImpl extends OrderMatcherServiceGrpc.OrderMatcherServic
                 .build();
     }
 
+    /***
+     * Convert an Optional<Order> to a RetrieveOrderResponse. A RetrieveOrderResponse wraps an order.
+     * @param order Optional Order.
+     * @return Resultant RetrieveOrderResponse.
+     */
     private static RetrieveOrderResponse optionalOrderToRetrieveOrderResponse(Optional<Order> order) {
         RetrieveOrderResponse.Builder builder = RetrieveOrderResponse.newBuilder();
         if (order.isPresent()) {
@@ -80,6 +90,11 @@ class OrderMatcherServiceImpl extends OrderMatcherServiceGrpc.OrderMatcherServic
         return builder.build();
     }
 
+    /***
+     * Convert an Optional<OrderStatus> to a CancelOrderResponse.
+     * @param orderStatus Optional OrderStatus.
+     * @return Resultant CancelOrderResponse.
+     */
     private static CancelOrderResponse optionalOrderStatusToCancelOrderResponse(Optional<OrderStatus> orderStatus) {
         CancelOrderResponse.Builder builder = CancelOrderResponse.newBuilder()
                 .setOrderWasFound(orderStatus.isPresent());
