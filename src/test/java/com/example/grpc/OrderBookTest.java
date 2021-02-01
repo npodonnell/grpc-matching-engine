@@ -20,7 +20,7 @@ public class OrderBookTest {
 
         submitOrderRequest = makeLimitSubmitOrderRequest(6001, Ticker.BTC_USD,
                 OrderDirection.BUY,10000, 10);
-        order = orderBook.match(12345, submitOrderRequest);
+        order = orderBook.submitOrder(12345, submitOrderRequest);
 
         assertEquals(12345, order.getOrderId());
         assertEquals(6001, order.getCustomerId());
@@ -41,9 +41,9 @@ public class OrderBookTest {
          * #2: Customer 6002 SELL 10 BTC_USD @ 10000
          */
 
-        Order order1 = orderBook.match(1, makeLimitSubmitOrderRequest(6001, Ticker.BTC_USD,
+        Order order1 = orderBook.submitOrder(1, makeLimitSubmitOrderRequest(6001, Ticker.BTC_USD,
                 OrderDirection.BUY, 10000, 10));
-        Order order2 = orderBook.match(2, makeLimitSubmitOrderRequest(6002, Ticker.BTC_USD,
+        Order order2 = orderBook.submitOrder(2, makeLimitSubmitOrderRequest(6002, Ticker.BTC_USD,
                 OrderDirection.SELL,10000, 10));
 
         assertOrderShort(order1, OrderStatus.PENDING, 0, 0);
@@ -57,9 +57,9 @@ public class OrderBookTest {
          * #2: Customer 6002 SELL 10 BTC_USD @ MARKET
          */
 
-        Order order1 = orderBook.match(1, makeLimitSubmitOrderRequest(6001, Ticker.BTC_USD,
+        Order order1 = orderBook.submitOrder(1, makeLimitSubmitOrderRequest(6001, Ticker.BTC_USD,
                 OrderDirection.BUY, 10000, 10));
-        Order order2 = orderBook.match(2, makeMarketSubmitOrderRequest(6002, Ticker.BTC_USD,
+        Order order2 = orderBook.submitOrder(2, makeMarketSubmitOrderRequest(6002, Ticker.BTC_USD,
                 OrderDirection.SELL, 10));
 
         assertOrderShort(order1, OrderStatus.PENDING, 0, 0);

@@ -16,7 +16,7 @@ public class OrderManager {
         }
     }
 
-    public Order match(SubmitOrderRequest submitOrderRequest) {
+    public Order submitOrder(SubmitOrderRequest submitOrderRequest) {
         // Get the appropriate order book
         OrderBook orderBook = tickerToOrderBookMap.get(submitOrderRequest.getTicker());
 
@@ -27,7 +27,7 @@ public class OrderManager {
         orderIdToOrderBookMap.put(orderId, orderBook);
 
         // Attempt to match the order
-        return orderBook.match(orderId, submitOrderRequest);
+        return orderBook.submitOrder(orderId, submitOrderRequest);
     }
 
     public Optional<Order> retrieveOrder(OrderReference orderReference) {

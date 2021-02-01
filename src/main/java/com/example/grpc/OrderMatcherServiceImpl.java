@@ -20,7 +20,7 @@ class OrderMatcherServiceImpl extends OrderMatcherServiceGrpc.OrderMatcherServic
      */
     @Override
     public void submitOrder(SubmitOrderRequest submitOrderRequest, StreamObserver<SubmitOrderResponse> responseObserver) {
-        responseObserver.onNext(orderToSubmitOrderResponse(orderManager.match(submitOrderRequest)));
+        responseObserver.onNext(orderToSubmitOrderResponse(orderManager.submitOrder(submitOrderRequest)));
         responseObserver.onCompleted();
     }
 

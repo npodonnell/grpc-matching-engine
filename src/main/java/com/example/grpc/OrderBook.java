@@ -3,6 +3,9 @@ package com.example.grpc;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+/***
+ * An order book for a specific ticker/asset. Contains the core functionality to submit, retrieve and cancel orders.
+ */
 public class OrderBook {
     /**
      * The ticker to which this order book pertains
@@ -26,6 +29,10 @@ public class OrderBook {
      */
     ConcurrentSkipListSet<MutableOrder> orderHistory;
 
+    /***
+     * Constructor.
+     * @param ticker Ticker of this order book.
+     */
     public OrderBook(Ticker ticker) {
         this.ticker = ticker;
 
@@ -55,7 +62,13 @@ public class OrderBook {
         });
     }
 
-    public Order match(long orderId, SubmitOrderRequest submitOrderRequest) {
+    /***
+     * Submit a new order to the matching engine.
+     * @param orderId Order ID.
+     * @param submitOrderRequest Protobuf SubmitOrderRequest.
+     * @return Protobuf Order.
+     */
+    public Order submitOrder(long orderId, SubmitOrderRequest submitOrderRequest) {
         assert(submitOrderRequest.getTicker() == ticker);
         assert(!allOrders.containsKey(orderId));
 
@@ -71,10 +84,21 @@ public class OrderBook {
         return mutableOrderToOrder(mutableOrder);
     }
 
+    /***
+     * Retrieve an order from the matching engine by orderId.
+     * @param orderId Order ID.
+     * @return Protobuf Order.
+     */
     public Order retrieveOrder(long orderId) {
         return mutableOrderToOrder(allOrders.get(orderId));
     }
 
+    /***
+     * Cancel an active order. If the order has already been filled, cancellation is impossible. Otherwise the final
+     * state of the order will be CANCELLED or PARTIALLY_FILLED_AND_CANCELLED.
+     * @param orderId Order ID.
+     * @return Terminal order status.
+     */
     public OrderStatus cancelOrder(long orderId) {
         MutableOrder mutableOrder = allOrders.get(orderId);
         OrderStatus currentStatus = mutableOrder.orderStatus();
@@ -98,7 +122,11 @@ public class OrderBook {
         return mutableOrder.orderStatus();
     }
 
-
+    /***
+     * Retrieve an instant bid/ask quote. bid is the highest bid of a buyer currently in the order book, ask is the
+     * lowest ask of a seller currently in the order book. Volume is not considered.
+     * @return Protobuf Quote.
+     */
     public Quote getQuote() {
         Quote.Builder builder = Quote.newBuilder();
         if (buyOrders.size() > 0) {
@@ -114,6 +142,10 @@ public class OrderBook {
     // Private Functions
     ///
 
+    /***
+     * Attempt to match a newly submitted buy order against existing sell order(s).
+     * @param buyOrder New buy order.
+     */
     private void matchBuy(MutableOrder buyOrder) {
         for (MutableOrder sellOrder: sellOrders) {
             if (buyOrder.isLimitOrder && sellOrder.limitPrice > buyOrder.limitPrice) {
@@ -147,6 +179,10 @@ public class OrderBook {
         }
     }
 
+     /***
+     * Attempt to match a newly submitted sell order against existing buy order(s).
+     * @param sellOrder New sell order.
+     */
     private void matchSell(MutableOrder sellOrder) {
         for (MutableOrder buyOrder: buyOrders) {
             if (sellOrder.isLimitOrder && buyOrder.limitPrice < sellOrder.limitPrice) {
@@ -180,6 +216,11 @@ public class OrderBook {
         }
     }
 
+    /***
+     * After an order has been either fully filled or cancelled, it gets added to the history and finish time is
+     * recorded.
+     * @param mutableOrder Mutable Order.
+     */
     private void addToHistory(MutableOrder mutableOrder) {
         mutableOrder.finishTime = System.currentTimeMillis();
         orderHistory.add(mutableOrder);
@@ -189,6 +230,11 @@ public class OrderBook {
     // Utility Functions
     ///
 
+    /***
+     * Converts a mutable order to a protobuf order.
+     * @param mutableOrder Mutable order.
+     * @return Protobuf order.
+     */
     private Order mutableOrderToOrder(MutableOrder mutableOrder) {
         return Order.newBuilder()
                 .setOrderId(mutableOrder.orderId)
