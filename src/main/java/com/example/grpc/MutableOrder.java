@@ -66,7 +66,7 @@ public class MutableOrder {
     }
 
     /***
-     * To tring.
+     * To String.
      * @return String representation.
      */
     @Override
